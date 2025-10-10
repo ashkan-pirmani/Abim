@@ -1,8 +1,8 @@
-name: Abim checker
+name: Abim checker (headless)
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/20 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -13,18 +13,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Install dependencies
-        run: pip install requests beautifulsoup4
-      - name: Run checker
+
+      - name: Install Chrome & Selenium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+          pip install selenium beautifulsoup4
+
+      - name: Run Abim check
+        env:
+          CHROME_PATH: /usr/bin/chromium-browser
         run: python monitor.py
-      - name: Commit result if changed
+
+      - name: Commit result
         run: |
           git config user.name "Abim Bot"
           git config user.email "actions@github.com"
-          # hash değişimini anlamak için eski commit ile diff
-          git add index.html .abim_hash
-          git diff --cached --quiet && echo "Değişiklik yok" || (git commit -m "Abim guncelleme [skip ci]" && git push)
+          git add index.html
+          git commit -m "Abim update [skip ci]" || echo "No changes"
+          git push
