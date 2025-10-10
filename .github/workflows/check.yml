@@ -21,10 +21,10 @@ jobs:
         run: pip install requests beautifulsoup4
       - name: Run checker
         run: python monitor.py
-      - name: Commit result
+      - name: Commit result if changed
         run: |
           git config user.name "Abim Bot"
           git config user.email "actions@github.com"
-          git add index.html
-          git commit -m "Update status [skip ci]" || echo "No changes"
-          git push
+          # hash değişimini anlamak için eski commit ile diff
+          git add index.html .abim_hash
+          git diff --cached --quiet && echo "Değişiklik yok" || (git commit -m "Abim guncelleme [skip ci]" && git push)
