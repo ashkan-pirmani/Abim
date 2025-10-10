@@ -1,0 +1,27 @@
+name: Abim checker
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+      - name: Run checker
+        run: python monitor.py
+      - name: Commit result
+        run: |
+          git config user.name "Abim Bot"
+          git config user.email "actions@github.com"
+          git add index.html
+          git commit -m "Update status [skip ci]" || echo "No changes"
+          git push
