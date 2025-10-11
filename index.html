@@ -1,16 +1,77 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abim Radar</title>
+<style>
+:root {
+  --card: #ffffff;
+  --shadow: 0 10px 30px rgba(0,0,0,.07);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 32px 14px; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background: linear-gradient(135deg, #fff6f6 0%, #ffffff 60%);
+  color: #222;
+}
+.container { max-width: 960px; margin: 0 auto; }
+.header {
+  display: flex; align-items: center; gap: 10px; color: #b31b1b;
+}
+.header h1 { font-size: 26px; margin: 0; }
+.card {
+  background: var(--card); border-radius: 16px; padding: 20px; box-shadow: var(--shadow);
+  border: 1px solid rgba(0,0,0,.06);
+}
+.table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: left; }
+.td-left { font-weight: 600; }
+.meta { color: #666; font-size: 14px; margin-top: 10px; }
+a { color: #0b57d0; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.badges { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; border: 1px solid #ddd; background: #fafafa; }
+.b { padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+.b-red { color: #b31b1b; background: #ffecec; border: 1px solid #ffd3d3; }
+.b-green { color: #1b7a1b; background: #eaffea; border: 1px solid #c9f0c9; }
+.b-amber { color: #8a6d3b; background: #fff6df; border: 1px solid #ffe3ac; }
+.fun { font-size: 16px; color: #777; margin-top: 12px; font-style: italic; text-align: center; }
+.pulse { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.01)} 100%{transform:scale(1)} }
+.confetti { position: fixed; top: -10px; left: 0; right: 0; pointer-events: none; }
+.c { position: absolute; width: 10px; height: 10px; opacity: .9; animation: fall 4s linear infinite; border-radius: 2px; }
+@keyframes fall { 0%{transform:translateY(-10px) rotate(0deg)} 100%{transform:translateY(110vh) rotate(720deg)} }
+</style>
+</head>
+<body>
 
-    <html><head><meta charset='utf-8'>
-    <title>Abim - VFS Netherlands Turkey Status</title>
-    <style>
-    body {
-      background:#e9ffe9; font-family:Arial; text-align:center; margin-top:50px;
-    }
-    h1 { font-size:24px; }
-    p { font-size:18px; }
-    </style></head><body>
-    <h1>Abim - VFS Netherlands Turkey Status</h1>
-    <p>✅ Appointment might be available!</p>
-    <p>Benim abim, dişçi abim... AbimRadar devrede. ☕️</p>
-    <p>Last checked: 2025-10-11 07:47 UTC</p>
-    <p><a href='https://visa.vfsglobal.com/tur/en/nld/'>https://visa.vfsglobal.com/tur/en/nld/</a></p>
-    </body></html>
+<div class="container">
+  <div class="card pulse">
+    <div class="header">
+      <div style="font-size:28px; line-height:1">☕️</div>
+      <h1>Randevu Yok Abim</h1>
+    </div>
+
+    <div class="badges">
+      <span class="badge">Kategori: </span>
+      <span class="badge">Alt Kategori: </span>
+      <span class="badge">Merkez sayisi: 0</span>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr><th>Merkez</th><th>Durum</th><th>Detay</th></tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+    </table>
+
+    <p class="meta">Son kontrol: 2025-10-11 08:29 UTC</p>
+    <p class="meta"><a href="https://visa.vfsglobal.com/tur/en/nld/book-an-appointment" target="_blank">VFS Randevu Sayfasi</a></p>
+    <p class="fun">Abim benim. Disci kardesim. Bugun yoksa yarin olur abim 🌤️</p>
+  </div>
+</div>
+</body>
+</html>
