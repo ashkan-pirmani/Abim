@@ -1,73 +1,77 @@
-# monitor.py – Headless browser edition for Abim
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import WebDriverException
-from bs4 import BeautifulSoup
-from datetime import datetime
-import os, hashlib, time
-
-URL = "https://visa.vfsglobal.com/tur/en/nld/"
-
-def check_status():
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=new")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-    chrome_options.add_argument("--window-size=1280,800")
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                                "Chrome/124.0 Safari/537.36")
-
-    try:
-        driver = webdriver.Chrome(options=chrome_options)
-        driver.get(URL)
-        time.sleep(5)  # wait for Cloudflare + JS
-        html = driver.page_source
-        driver.quit()
-        soup = BeautifulSoup(html, "html.parser")
-        text = soup.get_text().lower()
-        if "no appointment" in text or "no appointments" in text:
-            return "none", "❌ No appointments available"
-        elif "available" in text or "select a time" in text or "book now" in text:
-            return "maybe", "✅ Appointment might be available!"
-        else:
-            return "unknown", "🤔 Could not determine status. Site may have changed."
-    except WebDriverException as e:
-        return "error", f"⚠️ Selenium error: {e}"
-
-def generate_html(status_type, message):
+def build_html(status_type, message):
     now = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
-    color = {
-        "none": "#fff1f1",
-        "maybe": "#e9ffe9",
-        "unknown": "#fff8db",
-        "error": "#fff8db",
-    }.get(status_type, "#fff8db")
+    palette = {
+        "none":   {"bg": "#fff6f6", "fg": "#b31b1b", "emoji": "☕️", "title": "Randevu Yok Abim"},
+        "maybe":  {"bg": "#f2fff2", "fg": "#1b7a1b", "emoji": "🕺", "title": "Randevu Var Gibi Abim!"},
+        "unknown":{"bg": "#fffbe6", "fg": "#8a6d3b", "emoji": "🤔", "title": "Abim Düşünüyor..."},
+        "error":  {"bg": "#fffbe6", "fg": "#8a6d3b", "emoji": "⚙️", "title": "Bir Şeyler Bozuldu Abim"},
+    }
+    theme = palette.get(status_type, palette["unknown"])
 
-    text = f"""
-    <html><head><meta charset='utf-8'>
-    <title>Abim - VFS Netherlands Turkey Status</title>
-    <style>
-    body {{
-      background:{color}; font-family:Arial; text-align:center; margin-top:50px;
-    }}
-    h1 {{ font-size:24px; }}
-    p {{ font-size:18px; }}
-    </style></head><body>
-    <h1>Abim - VFS Netherlands Turkey Status</h1>
-    <p>{message}</p>
-    <p>Benim abim, dişçi abim... AbimRadar devrede. ☕️</p>
-    <p>Last checked: {now}</p>
-    <p><a href='{URL}'>{URL}</a></p>
-    </body></html>"""
+    easter_eggs = [
+        "Abim benim, dişçi kardeşim... sabır 🍀",
+        "Bir kahve koy, sistem düşmüş olabilir ☕️",
+        "Her 20 dakikada bir umut tazelenir 💫",
+        "Randevu yoksa bile moralini bozma abim 🌤️",
+    ]
+    fun_quote = random.choice(easter_eggs)
 
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(text)
-    return hashlib.sha256(text.encode()).hexdigest()
+    confetti_html = ""
+    if status_type == "maybe":
+        pieces = []
+        for i in range(24):
+            left = random.randint(0, 98)
+            delay = random.uniform(0, 2.8)
+            color = random.choice(["#2ecc71", "#3498db", "#f1c40f", "#e67e22", "#e74c3c"])
+            pieces.append(
+                f'<span class="c" style="left:{left}vw; background:{color}; animation-delay:{delay:.2f}s;"></span>'
+            )
+        confetti_html = f'<div class="confetti">{"".join(pieces)}</div>'
 
-if __name__ == "__main__":
-    s, msg = check_status()
-    generate_html(s, msg)
+    html = f"""<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abim Radar</title>
+<style>
+body {{
+  margin:0; padding:40px 16px; font-family:-apple-system,Segoe UI,Roboto,Arial;
+  background:linear-gradient(135deg,{theme['bg']} 0%,#ffffff 70%);
+  color:#222; text-align:center;
+}}
+h1 {{ color:{theme['fg']}; font-size:28px; margin-bottom:6px; }}
+.message {{ font-size:18px; margin:10px 0; }}
+.meta {{ color:#555; font-size:14px; margin-top:12px; }}
+.fun {{ font-size:16px; color:#777; margin-top:18px; font-style:italic; }}
+.confetti {{ position:fixed; top:-10px; left:0; right:0; pointer-events:none; }}
+.c {{
+  position:absolute; width:10px; height:10px; opacity:.9;
+  animation:fall 4s linear infinite; border-radius:2px;
+}}
+@keyframes fall {{
+  0%{{transform:translateY(-10px) rotate(0deg);}}
+  100%{{transform:translateY(110vh) rotate(720deg);}}
+}}
+.card {{
+  display:inline-block; background:#fff; border-radius:16px;
+  padding:24px 32px; box-shadow:0 10px 30px rgba(0,0,0,.1);
+  max-width:800px;
+}}
+.hoverline:hover::after {{
+  content:' (Abim Mode aktif)'; font-size:14px; color:#999;
+}}
+</style>
+</head>
+<body>
+{confetti_html}
+<div class="card">
+  <h1 class="hoverline">{theme['emoji']} {theme['title']}</h1>
+  <p class="message">{escape_html(message)}</p>
+  <p class="meta">Son kontrol: {now}</p>
+  <p class="fun">{fun_quote}</p>
+  <p><a href="{BOOK_URL}" target="_blank">VFS Randevu Sayfası</a></p>
+</div>
+</body>
+</html>"""
+    return html
